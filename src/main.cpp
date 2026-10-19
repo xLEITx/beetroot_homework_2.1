@@ -89,7 +89,7 @@ void loop() {
   }else{
     digitalWrite(LED_PIN, LOW);
   }
-  delay(20);
+  delay(5);
   iterations_counter.add_loop();
   iterations_counter.add_iteration_time(iterations_counter.get_duration());
   if (iterations_counter.get_loops() == 1000)
