@@ -80,10 +80,26 @@ Led led;
 IterationsCounter iterations_counter;
 
 void blinking(Led& led){
-  if (led.)
+  if (led.get_mode() == BLINKING)
   {
-    /* code */
+      if (led.get_state() == ON)
+      {
+        led.set_state(OFF);
+        last_state_change = millis();
+
+      }else if(led.get_state() == OFF && millis() > last_state_change + DELAY){
+        led.set_state(ON);
+        last_state_change = millis();
+      }
+  }else if (led.get_mode() == ALWAYS_ON )
+  {
+    led.set_state(ON);
+  }else if (led.get_mode() == ALWAYS_OFF)
+  {
+    led.set_state(OFF);
   }
+  
+  
   
   
 }
