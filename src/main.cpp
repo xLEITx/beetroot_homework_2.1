@@ -1,6 +1,7 @@
 #include <Arduino.h>
 
 constexpr uint8_t LED_PIN  = 16;
+constexpr uint8_t BUTTON_PIN = 4;
 constexpr uint16_t DELAY = 1000;
 volatile uint64_t last_state_change = 0;
 
@@ -8,6 +9,11 @@ volatile uint64_t last_state_change = 0;
 enum Led_state{
   ON,
   OFF
+};
+enum Blinking_mode {
+  BLINKING,
+  ALWAYS_ON,
+  ALWAYS_OFF
 };
 
 class IterationsCounter{
@@ -46,13 +52,26 @@ class IterationsCounter{
 };
 
 class Led{
+  private:
+        Blinking_mode mode = BLINKING;
+        Led_state state = ON;
   public:
-    Led_state state = ON;
+    Blinking_mode get_mode(){
+      return mode;
+    }
+    Led_state get_state(){
+      return state;
+    }
+
     void init(){
       pinMode(LED_PIN, OUTPUT);
     }
 
-    void set(Led_state state){
+    void set_mode(Blinking_mode mode){
+      this->mode = mode;
+    }
+
+    void set_state(Led_state state){
       this->state = state;
     }
 };
@@ -61,15 +80,11 @@ Led led;
 IterationsCounter iterations_counter;
 
 void blinking(Led& led){
-  if (led.state == ON && millis() > last_state_change + DELAY)
+  if (led.)
   {
-    led.set(OFF);
-    last_state_change = millis();
-
-  }else if(led.state == OFF && millis() > last_state_change + DELAY){
-    led.set(ON);
-    last_state_change = millis();
+    /* code */
   }
+  
   
 }
 
@@ -83,13 +98,13 @@ void loop() {
 
   blinking(led);
 
-  if (led.state == ON)
+  if (led.get_state() == ON)
   {
     digitalWrite(LED_PIN, HIGH);
   }else{
     digitalWrite(LED_PIN, LOW);
   }
-  delay(5);
+  
   iterations_counter.add_loop();
   iterations_counter.add_iteration_time(iterations_counter.get_duration());
   if (iterations_counter.get_loops() == 1000)
