@@ -103,7 +103,7 @@ void blinking(Led& led){
 
 void IRAM_ATTR button_isr(){
   uint64_t interruption_time = millis();
-  if ((interruption_time - last_interruption_time) > 40)
+  if ((interruption_time - last_interruption_time) > 100)
   { 
     is_button_pressed = true;
     last_interruption_time = interruption_time;
@@ -118,12 +118,14 @@ void setup() {
 }
 
 void loop() {
-  iterations_counter.set_start(micros());
+  bool pressed;
 
-  if (is_button_pressed) {
-    noInterrupts();
-    is_button_pressed = false;
-    interrupts();
+  iterations_counter.set_start(micros());
+  noInterrupts();
+  pressed = is_button_pressed;
+  is_button_pressed = false;
+  interrupts();
+  if (pressed) {
 
     if (led.get_mode() == BLINKING) {
       led.set_mode(ALWAYS_ON);
