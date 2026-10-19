@@ -4,7 +4,7 @@ constexpr uint8_t LED_PIN  = 16;
 constexpr uint8_t BUTTON_PIN = 4;
 constexpr uint16_t DELAY = 1000;
 volatile uint64_t last_state_change = 0;
-
+volatile uint64_t last_interrupt_time = 0;
 
 enum Led_state{
   ON,
@@ -97,11 +97,22 @@ void blinking(Led& led){
   }else if (led.get_mode() == ALWAYS_OFF)
   {
     led.set_state(OFF);
+  }    
+}
+
+void IRAM_ATTR button_isr(Led& led){
+  uint64_t interruption_time = millis();
+  if (led.get_mode() == BLINKING)
+  {
+    led.set_mode(ALWAYS_ON);
+  }else if(led.get_mode()== ALWAYS_ON){
+    led.set_mode(ALWAYS_OFF);
+  }else{
+    led.set_mode(BLINKING);
   }
   
-  
-  
-  
+
+
 }
 
 void setup() { 
