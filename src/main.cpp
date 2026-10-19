@@ -5,6 +5,7 @@ constexpr uint8_t BUTTON_PIN = 4;
 constexpr uint16_t DELAY = 1000;
 volatile uint64_t last_state_change = 0;
 volatile uint64_t last_interruption_time = 0;
+volatile bool is_button_pressed = false;
 
 enum Led_state{
   ON,
@@ -104,26 +105,34 @@ void IRAM_ATTR button_isr(){
   uint64_t interruption_time = millis();
   if ((interruption_time - last_interruption_time) > 40)
   { 
-    if (led.get_mode() == BLINKING)
-    {
-      led.set_mode(ALWAYS_ON);
-    }else if(led.get_mode()== ALWAYS_ON){
-      led.set_mode(ALWAYS_OFF);
-    }else{
-      led.set_mode(BLINKING);
-    }
+    is_button_pressed = true;
     last_interruption_time = interruption_time;
   }
 }
 
 void setup() { 
   Serial.begin(115200);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
   led.init();
   attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), button_isr, FALLING);
 }
 
 void loop() {
   iterations_counter.set_start(micros());
+
+  if (is_button_pressed) {
+    noInterrupts();
+    is_button_pressed = false;
+    interrupts();
+
+    if (led.get_mode() == BLINKING) {
+      led.set_mode(ALWAYS_ON);
+    } else if (led.get_mode() == ALWAYS_ON) {
+      led.set_mode(ALWAYS_OFF);
+    } else {
+      led.set_mode(BLINKING);
+    }
+  }
 
   blinking(led);
 
