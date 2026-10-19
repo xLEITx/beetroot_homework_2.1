@@ -119,7 +119,7 @@ void IRAM_ATTR button_isr(){
 void setup() { 
   Serial.begin(115200);
   led.init();
-  
+  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), button_isr, FALLING);
 }
 
 void loop() {
